@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thread Page</title>
+  <style>
+
+body {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #f7e1d7;
+      color: #664343;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      overflow: hidden;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #aa6f6c;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 18px;
+      color: #aa6f6c;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e0b8a6;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .form-group button,
+    .comment-button {
+      width: 100%;
+      padding: 10px;
+      background-color: #ffcbc3;
+      color: #aa6f6c;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      text-align: center;
+      display: block;
+      margin: 0 auto;
+    }
+    .form-group button:hover,
+    .comment-button:hover {
+      background-color: #ff8c82;
+      color: #fff;
+    }
+    .thread-header, .comment {
+      border-bottom: 1px solid #e0b8a6;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+    }
+    .thread-header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .thread-header p {
+      font-size: 16px;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    .tags {
+      margin-bottom: 15px;
+    }
+    .tags span {
+      background-color: #ffcbc3;
+      color: #664343;
+      padding: 5px 10px;
+      margin-right: 5px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .post-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #aa6f6c;
+      margin-top: 15px;
+    }
+    .post-footer img {
+      max-width: 80px;
+      height: auto;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    .timestamp {
+      font-size: 12px;
+      color: #aa6f6c;
+    }
+    .comment {
+      padding: 15px;
+      background-color: #fff8f0;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    .comment h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #664343;
+      margin-bottom: 10px;
+    }
+    .comment p {
+      margin: 0;
+      font-size: 16px;
+      color: #664343;
+      line-height: 1.6;
+    }
+    .comment-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #aa6f6c;
+      margin-top: 10px;
+      border-left: 2px solid #aa6f6c;
+      padding-left: 10px;
+    }
+    .reply-button {
+      background-color: #ffcbc3;
+      color: #aa6f6c;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .reply-button:hover {
+      background-color: #ff8c82;
+      color: #fff;
+    }
+    .reply-form {
+      display: none;
+      margin-top: 10px;
+    }
+    .reply-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #aa6f6c;
+    }
+    .reply-form input,
+    .reply-form textarea {
+      width: calc(100% - 22px);
+      padding: 10px;
+      border: 1px solid #e0b8a6;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .reply-form button {
+      width: calc(100% - 22px);
+      padding: 10px;
+      background-color: #ffcbc3;
+      color: #aa6f6c;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .reply-form button:hover {
+      background-color: #ff8c82;
+      color: #fff;
+    }
+    .comments ul {
+      list-style-type: none; /* This line removes the dots */
+      padding-left: 0; /* Optional: Removes default padding for lists */
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+    .modal-content {
+  background-color: #fefefe;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px; /* Adjusted width */
+  border-radius: 10px;
+}
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .comment-image {
+      max-width: 80px; /* Adjust as needed */
+      height: auto;
+      border-radius: 5px;
+      margin-top: 10px; /* Optional: Adjust spacing */
+      }
+      .modal-content img {
+  max-width: 100%; /* Ensure the image doesn't exceed its container */
+  height: auto;
+  border-radius: 10px; /* Rounded corners */
+  display: block; /* Ensure the image behaves as a block element */
+  margin: 0 auto; /* Center the image horizontally */
+}
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .pagination button {
+      background-color: #ffcbc3;
+      color: #aa6f6c;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      margin: 0 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .pagination button:hover {
+      background-color: #ff8c82;
+      color: #fff;
+    }
+    .pagination button.disabled {
+      background-color: #e0b8a6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="thread-container" class="thread-header">
+      <!-- Thread content will be dynamically added here -->
+    </div>
+    <button id="open-comment-modal" class="comment-button">Leave a Comment</button>
+    <div class="comments">
+      <h2>Comments</h2>
+      <ul id="comments-list">
+        <!-- Comments will be dynamically added here -->
+      </ul>
+      <div class="pagination" id="pagination">
+        <!-- Pagination buttons will be dynamically added here -->
+      </div>
+    </div>
+  </div>
+
+  <div id="commentModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="form-group" id="comment-form-container">
+        <h2>Leave a Comment</h2>
+        <form id="comment-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="comment-name">Name:</label>
+            <input type="text" id="comment-name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="comment-content">Comment:</label>
+            <textarea id="comment-content" name="content" rows="4" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="comment-image">Upload Image/GIF:</label>
+            <input type="file" id="comment-image" name="image">
+          </div>
+          <div class="form-group">
+            <label for="captcha">What is <span id="captcha-question"></span>?</label>
+            <input type="text" id="captcha" name="captcha" required>
+          </div>
+          <button type="submit">Submit Comment</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
+
+  <script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const threadId = urlParams.get('id');
+
+    const commentsPerPage = 5;
+    let currentPage = 1;
+    let comments = [];
+
+    fetch(`/threads/${threadId}`)
+      .then(response => response.json())
+      .then(thread => {
+        const threadContainer = document.getElementById('thread-container');
+
+        // Format the date
+        const timestamp = new Date(thread.timestamp);
+        const formattedDate = timestamp.toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+        });
+
+        threadContainer.innerHTML = `
+          <h1>${thread.title}</h1>
+          <p>${thread.content}</p>
+          <div class="tags">
+            ${thread.tags.split(',').map(tag => `<span>${tag.trim()}</span>`).join('')}
+          </div>
+          ${thread.image ? `<div><img src="/uploads/${thread.image}" alt="Image" style="max-width: 100%; border-radius: 5px;"></div>` : ''}
+          <div class="post-footer">
+            <span class="timestamp">Posted by ${thread.name} on ${formattedDate}</span>
+          </div>
+        `;
+
+        // Load and display comments
+        fetch(`/threads/${threadId}/comments`)
+          .then(response => response.json())
+          .then(data => {
+            comments = data.reverse();
+            displayComments();
+            setupPagination();
+          })
+          .catch(error => console.error('Error fetching comments:', error));
+      })
+      .catch(error => console.error('Error fetching thread:', error));
+
+    function displayComments() {
+      const commentsList = document.getElementById('comments-list');
+      commentsList.innerHTML = '';
+
+      const start = (currentPage - 1) * commentsPerPage;
+      const end = start + commentsPerPage;
+      const paginatedComments = comments.slice(start, end);
+
+      paginatedComments.forEach(comment => {
+        const commentItem = createCommentItem(comment);
+        commentsList.appendChild(commentItem);
+      });
+    }
+
+    function setupPagination() {
+      const pagination = document.getElementById('pagination');
+      pagination.innerHTML = '';
+
+      const pageCount = Math.ceil(comments.length / commentsPerPage);
+
+      for (let i = 1; i <= pageCount; i++) {
+        const button = document.createElement('button');
+        button.textContent = i;
+        button.classList.add('page-btn');
+        if (i === currentPage) {
+          button.classList.add('active');
+        }
+        button.addEventListener('click', () => {
+          currentPage = i;
+          displayComments();
+          setupPagination();
+        });
+        pagination.appendChild(button);
+      }
+    }
+
+    const commentForm = document.getElementById('comment-form');
+    const captchaQuestion = document.getElementById('captcha-question');
+
+    commentForm.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const formData = new FormData(commentForm);
+      const captchaAnswer = parseInt(document.getElementById('captcha').value);
+      const expectedAnswer = parseInt(captchaQuestion.getAttribute('data-answer'));
+
+      if (captchaAnswer !== expectedAnswer) {
+        alert('Captcha verification failed. Please try again.');
+        return;
+      }
+
+      fetch(`/threads/${threadId}/comments`, {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(newComment => {
+          comments.unshift(newComment);
+          displayComments();
+          setupPagination();
+        })
+        .catch(error => console.error('Error adding comment:', error));
+
+      commentForm.reset();
+      modal.style.display = 'none';
+    });
+
+    function createCommentItem(comment) {
+      const commentItem = document.createElement('li');
+      commentItem.classList.add('comment');
+
+      commentItem.innerHTML = `
+        <h3>${comment.name}</h3>
+        ${comment.image ? `<img src="/uploads/${comment.image}" alt="Comment Image" class="comment-image" onclick="openModal('/uploads/${comment.image}')">` : ''}
+        <p>${comment.content}</p>
+        <div class="comment-footer">
+          <span class="timestamp">${formatDate(comment.timestamp)}</span>
+          <button class="reply-button">Reply</button>
+        </div>
+        <div class="reply-form" style="display: none;">
+          <form class="reply-comment-form">
+            <input type="hidden" name="parentId" value="${comment.id}">
+            <div class="form-group">
+              <label for="reply-name">Name:</label>
+              <input type="text" id="reply-name-${comment.id}" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="reply-content">Reply:</label>
+              <textarea id="reply-content-${comment.id}" name="content" rows="2" required></textarea>
+            </div>
+            <button type="submit">Submit Reply</button>
+          </form>
+        </div>
+        <ul class="replies-list"></ul>
+      `;
+
+      const replyButton = commentItem.querySelector('.reply-button');
+      const replyForm = commentItem.querySelector('.reply-form');
+      const replyCommentForm = replyForm.querySelector('.reply-comment-form');
+
+      replyButton.addEventListener('click', () => {
+        replyForm.style.display = 'block';
+      });
+
+      replyCommentForm.addEventListener('submit', e => {
+        e.preventDefault();
+
+        const replyName = replyForm.querySelector(`#reply-name-${comment.id}`).value;
+        const replyContent = replyForm.querySelector(`#reply-content-${comment.id}`).value;
+
+        fetch(`/threads/${threadId}/comments`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: replyName, content: replyContent, parentId: comment.id }),
+        })
+          .then(response => response.json())
+          .then(newReply => {
+            const repliesList = commentItem.querySelector('.replies-list');
+            const replyItem = createCommentItem(newReply);
+            repliesList.appendChild(replyItem);
+          })
+          .catch(error => console.error('Error adding reply:', error));
+
+        replyForm.style.display = 'none';
+        replyCommentForm.reset();
+      });
+
+      if (comment.replies && comment.replies.length > 0) {
+        const repliesList = commentItem.querySelector('.replies-list');
+        comment.replies.forEach(reply => {
+          const replyItem = createCommentItem(reply);
+          repliesList.appendChild(replyItem);
+        });
+      }
+
+      return commentItem;
+    }
+
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      });
+    }
+
+    function openModal(imageSrc) {
+      const imageModal = document.getElementById('imageModal');
+      const modalImage = document.getElementById('modalImage');
+
+      modalImage.src = imageSrc;
+      imageModal.style.display = 'block';
+
+      const closeModal = () => {
+        imageModal.style.display = 'none';
+      };
+
+      const closeSpan = imageModal.querySelector('.close');
+      closeSpan.addEventListener('click', closeModal);
+      window.addEventListener('click', (event) => {
+        if (event.target === imageModal) {
+          closeModal();
+        }
+      });
+    }
+
+    // Captcha setup
+    function generateCaptcha() {
+      const a = Math.floor(Math.random() * 10);
+      const b = Math.floor(Math.random() * 10);
+      const captchaQuestion = document.getElementById('captcha-question');
+      captchaQuestion.textContent = `${a} + ${b}`;
+      captchaQuestion.setAttribute('data-answer', a + b);
+    }
+
+    generateCaptcha();
+
+    // Modal handling
+    const modal = document.getElementById('commentModal');
+    const btn = document.getElementById('open-comment-modal');
+    const span = modal.querySelector('.close');
+
+    btn.onclick = () => {
+      modal.style.display = 'block';
+      generateCaptcha();
+    };
+
+    span.onclick = () => {
+      modal.style.display = 'none';
+    };
+
+    window.onclick = (event) => {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html>

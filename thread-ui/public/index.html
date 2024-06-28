@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forum Page</title>
+  <style>
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #f7e1d7;
+      color: #664343;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #aa6f6c;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 18px;
+      color: #aa6f6c;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e0b8a6;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .form-group button {
+      width: 100%;
+      padding: 10px;
+      background-color: #ffcbc3;
+      color: #aa6f6c;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .form-group button:hover {
+      background-color: #ff8c82;
+      color: #fff;
+    }
+    .posts {
+      list-style-type: none;
+      padding: 0;
+    }
+    .post {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #e0b8a6;
+      border-radius: 10px;
+      background-color: #fff8f0;
+    }
+    .post h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: #664343;
+      border-bottom: 1px solid #e0b8a6;
+      padding-bottom: 10px;
+    }
+    .post-content {
+      margin: 15px 0;
+      color: #664343;
+    }
+    .tags {
+      margin-bottom: 10px;
+    }
+    .tags span {
+      background-color: #ffcbc3;
+      color: #664343;
+      padding: 5px 10px;
+      margin-right: 5px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .post-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #aa6f6c;
+      margin-top: 10px;
+    }
+    .post-footer img {
+      max-width: 100px; /* Adjust the size as needed */
+      height: auto;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    .post-image img {
+      max-width: 200px; /* Set the desired size */
+      height: auto;
+      border-radius: 5px;
+    }
+    .timestamp {
+      font-size: 12px;
+      color: #aa6f6c;
+      cursor: pointer;
+    }
+    .timestamp:hover {
+      text-decoration: underline;
+    }
+    .comment {
+      margin-left: 20px;
+      padding-left: 10px;
+      border-left: 2px solid #e0b8a6;
+    }
+    .comment h3 {
+      font-size: 20px;
+      color: #664343;
+    }
+    .comment p {
+      color: #664343;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Upload a Thread</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data" class="form-group">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+      </div>
+      <div class="form-group">
+        <label for="content">Content:</label><br>
+        <textarea id="content" name="content" rows="4" cols="50" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="tags">Tags (comma-separated):</label>
+        <input type="text" id="tags" name="tags" required>
+      </div>
+      <div class="form-group">
+        <label for="image">Image:</label>
+        <input type="file" id="image" name="image">
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+    <hr>
+
+    <h2>Threads</h2>
+    <ul class="posts">
+      <!-- Threads will be dynamically added here -->
+    </ul>
+  </div>
+
+  <script>
+    fetch('/threads')
+      .then(response => response.json())
+      .then(threads => {
+        const postsList = document.querySelector('.posts');
+        threads.forEach(thread => {
+          const postItem = document.createElement('li');
+          postItem.classList.add('post');
+
+          // Format the date
+          const timestamp = new Date(thread.timestamp);
+          const formattedDate = timestamp.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+          });
+
+          postItem.innerHTML = `
+            <h2>${thread.title}</h2>
+            <p class="post-content">${thread.content}</p>
+            <div class="tags">
+              ${thread.tags.split(',').map(tag => `<span>${tag.trim()}</span>`).join('')}
+            </div>
+            ${thread.image ? `<div class="post-image"><img src="/uploads/${thread.image}" alt="Image"></div>` : ''}
+            <div class="post-footer">
+              <span class="timestamp" onclick="copyId(event, '${thread.id}')">ID: ${thread.id}</span>
+              <span>Posted by ${thread.name} on ${formattedDate}</span>
+              <button onclick="viewThread('${thread.id}')">View Full Thread</button>
+            </div>
+          `;
+          postsList.appendChild(postItem);
+        });
+      })
+      .catch(error => console.error('Error fetching threads:', error));
+
+    function copyId(event, id) {
+      navigator.clipboard.writeText(id);
+      event.target.textContent = 'ID Copied';
+      setTimeout(() => {
+        event.target.textContent = `ID: ${id}`;
+      }, 1500);
+    }
+
+    function viewThread(id) {
+      window.location.href = `/thread.html?id=${id}`;
+    }
+  </script>
+</body>
+</html>
